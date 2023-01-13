@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -87,6 +88,20 @@ class MoviesInfoIntegrationControllerTest {
                 });
     }
     @Test
+    void updateMovieInfoNotFound() {
+        var movieInfoId="def";
+        var movieInfo = new MovieInfo(null, "Batman Begins Test Update",
+                2005, List.of("Christian Bale", "Michael Cane"), LocalDate.parse("2005-06-15"));
+
+        webTestClient
+                .put()
+                .uri(MOVIE_URL+"/{id}",movieInfoId )
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+    @Test
     void getMovieInfo() {
         webTestClient
                 .get()
@@ -96,6 +111,20 @@ class MoviesInfoIntegrationControllerTest {
                 .is2xxSuccessful()
                 .expectBodyList(MovieInfo.class)
                 .hasSize(3);
+    }
+    @Test
+    void getMovieInfoByYear() {
+        var uri=UriComponentsBuilder.fromUriString(MOVIE_URL)
+                        .queryParam("year",2005)
+                                .buildAndExpand().toUri();
+        webTestClient
+                .get()
+                .uri(uri)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .hasSize(1);
     }
     @Test
     void getMovieInfoById(){
