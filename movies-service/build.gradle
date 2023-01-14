@@ -25,8 +25,15 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
+	// wiremock
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
 }
 
-test {
+tasks.named('test') {
 	useJUnitPlatform()
+}
+sourceSets {
+	test{
+		java.srcDirs=["src/test/java/unit", "src/test/java/intg"]
+	}
 }
